@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %} Регистрация {% endblock %}
+
+{% block content %}
+    <h1>Регистрация</h1>
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.auto_id }}">{{ field.label }} </label>
+                {{ field }}
+                {% if field.errors %}
+                    <small class="form-text text-danger">Ошибка: {{ field.errors }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <input type="submit" class="btn btn-primary" value="Создать аккаунт">
+    </form>
+
+    <script>
+        document.getElementById('id_username').addEventListener('blur', async (event)=>{
+            const res = await fetch(`/validate_login/?login=${event.target.value}`).then(res=>res.json());
+
+            document.querySelectorAll('small').forEach((item, i, arr)=>{
+                item.remove();
+            });
+
+            if(res.errors){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'такой логин уже сущетсвует';
+                event.target.parentElement.appendChild(small);
+            }
+
+            if(event.target.value.length === 0){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'данное поле обязательно';
+                event.target.parentElement.appendChild(small);
+            }
+
+            const re = RegExp("^[a-zA-Z0-9-_]+$");
+
+            if(event.target.value.length !== 0 && !re.test(event.target.value)){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'допустимы цифры(0-9), латиница и знак нижнего подчёркивания';
+                event.target.parentElement.appendChild(small);
+            }
+        });
+
+        document.getElementById('id_email').addEventListener('blur', async (event) =>{
+            const res = await fetch(`/validate_email/?email=${event.target.value}`).then(res=>res.json());
+
+            document.querySelectorAll('small').forEach((item, i, arr)=>{
+                item.remove();
+            });
+
+            if(!res.is_valid && event.target.value.length !== 0){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'неверный формат почты';
+                event.target.parentElement.appendChild(small);
+            }
+
+            if(res.is_taken){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'такая почта уже занята';
+                event.target.parentElement.appendChild(small);
+            }
+
+            if(event.target.value.length === 0){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'данное поле обязательно';
+                event.target.parentElement.appendChild(small);
+            }
+        });
+
+        document.getElementById('id_name').addEventListener('blur', (event)=>{
+
+            document.querySelectorAll('small').forEach((item, i, arr)=>{
+                item.remove();
+            });
+
+            if(event.target.value.length === 0){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'данное поле обязательно';
+                event.target.parentElement.appendChild(small);
+            }
+
+            const re = RegExp("^[а-яА-Я- ]+$");
+
+            if(event.target.value.length !== 0 && !re.test(event.target.value)){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'допустимы кирилица и пробел';
+                event.target.parentElement.appendChild(small);
+            }
+
+        });
+
+        document.getElementById('id_surname').addEventListener('blur', (event)=>{
+
+            document.querySelectorAll('small').forEach((item, i, arr)=>{
+                item.remove();
+            });
+
+            if(event.target.value.length === 0){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'данное поле обязательно';
+                event.target.parentElement.appendChild(small);
+            }
+
+            const re = RegExp("^[а-яА-Я- ]+$");
+
+            if(event.target.value.length !== 0 && !re.test(event.target.value)){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'допустимы кирилица и пробел';
+                event.target.parentElement.appendChild(small);
+            }
+
+        });
+
+        document.getElementById('id_patronymic').addEventListener('blur', (event)=>{
+
+            document.querySelectorAll('small').forEach((item, i, arr)=>{
+                item.remove();
+            });
+
+            const re = RegExp("^[а-яА-Я- ]+$");
+
+            if(event.target.value.length !== 0 && !re.test(event.target.value)){
+                let small = document.createElement('small');
+                small.classList.add('form-text');
+                small.classList.add('text-danger');
+                small.innerHTML = 'допустимы кирилица и пробел';
+                event.target.parentElement.appendChild(small);
+            }
+
+        });
+    </script>
+{% endblock %}

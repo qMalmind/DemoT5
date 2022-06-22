@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %} Каталог {% endblock %}
+
+{% block content %}
+    <h1>Каталог</h1>
+
+    <div class="sort">
+        <table>
+            <tr>
+                <td><span>Сортировать по</span></td>
+                <td class="btn-group" role="group" aria-label="Basic example">
+
+                    <a href="{% url 'catalog' %}?filter={{ request.GET.filter }}&order_by=year" type="button"
+                       class="btn {% if request.GET.order_by == 'year' %} btn-primary {% else %} btn-secondary {% endif %}">дате</a>
+                    <a href="{% url 'catalog' %}?filter={{ request.GET.filter }}&order_by=name" type="button"
+                       class="btn {% if request.GET.order_by == 'name' %} btn-primary {% else %} btn-secondary {% endif %}">названию</a>
+                    <a href="{% url 'catalog' %}?filter={{ request.GET.filter }}&order_by=price" type="button"
+                       class="btn {% if request.GET.order_by == 'price' %} btn-primary {% else %} btn-secondary {% endif %}">цене</a>
+                </td>
+                <td>
+                    {% if request.GET.order_by %}
+                        <a href="{% url 'catalog' %}?filter={{ request.GET.filter }}">Сбросить</a>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><span>Фильтры по категориям</span></td>
+                <td class="btn-group" role="group" aria-label="Basic example">
+                    {% for item in category %}
+                        <a href="{% url 'catalog' %}?filter={{ item.pk }}&order_by={{ request.GET.order_by }}"
+                           class="btn {% if request.GET.filter == item.pk|stringformat:'s' %} btn-primary {% else %} btn-secondary {% endif %}">{{ item.name }}</a>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if request.GET.filter %}
+                        <a href="{% url 'catalog' %}?order_by={{ request.GET.order_by }}">Сбросить</a>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+    <div class="catalog">
+        {% for item in products %}
+            <div class="card" style="width: 300px;">
+                <img src="{{ item.photo_file.url }}" class="card-img-top" alt="{{ item.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">Lorem ipsum</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">{{ item.category.name }}</li>
+                    <li class="list-group-item">{{ item.price }}руб</li>
+                    <li class="list-group-item">{{ item.year }} год производства</li>
+                    <li class="list-group-item">Производитель: {{ item.country }}</li>
+                    <li class="list-group-item">На складе: {{ item.count }}</li>
+                </ul>
+                <div class="card-body">
+                    <a href="{% url 'product' item.pk %}" class="card-link">Подробнее</a>
+
+                    {% if user.is_authenticated %}
+                        <span class="btn btn-primary" onclick="addToCart(this, {{ item.pk }})">В корзину</span>
+                    {% endif %}
+                </div>
+                <div class="card-footer mes-hide">
+                    1
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        addToCart = async (target, pk) => {
+            const res = await fetch(`add_cart/?product=${pk}`).then(res => res.json());
+            let footer = target.parentElement.parentElement.querySelector('.card-footer');
+
+            footer.classList.remove('mes-success');
+            footer.classList.remove('mes-error');
+            footer.innerHTML = '';
+
+            if (res.error) {
+                footer.innerHTML = 'Товар не добавлен в корзину';
+                footer.classList.add('mes-error');
+            } else {
+                footer.innerHTML = 'Товар добавлен в корзину';
+                footer.classList.add('mes-success');
+            }
+
+            setTimeout(() => {
+                footer.classList.remove('mes-success');
+                footer.classList.remove('mes-error');
+            }, 1000)
+        }
+    </script>
+
+
+{% endblock %}

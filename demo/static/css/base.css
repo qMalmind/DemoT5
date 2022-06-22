@@ -1,0 +1,44 @@
+form,
+.form{
+    width: 450px;
+}
+
+@media (max-width: 450px) {
+    form,
+    .form{
+        width: 100%;
+    }
+}
+
+main{
+    padding: 1rem;
+}
+
+.catalog,
+.carts{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+td{
+    padding: 5px;
+}
+
+.mes{
+    transition: all .4s ease-out;
+}
+
+.mes-hide{
+    color: rgba(0, 0, 0, 0);
+}
+
+.mes-success{
+    color: #1e7e34;
+    transition: all .4s ease-out;
+}
+
+.mes-error{
+    color: #721c24;
+    transition: all .4s ease-out;
+}

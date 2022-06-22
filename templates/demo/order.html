@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %} Заказы {% endblock %}
+
+{% block content %}
+    <h1>Заказы</h1>
+    {% if orders %}
+        <ul>
+            {% for order in orders %}
+                <li>
+                    {{ order.date }} | {{ order.status_verbose }} |
+
+                    <a href="{% url 'delete_order' order.pk %}" class="btn btn-danger">Удалить</a>
+                    <ol>
+                        {% if order.orderinitem_set %}
+                            {% for item in order.orderinitem_set.all %}
+                                <li>
+                                    {{ item.product.name }} | {{ item.count }} | {{ item.price }}
+                                </li>
+
+                            {% endfor %}
+                        {% endif %}
+                    </ol>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>Заказов нет</h2>
+    {% endif %}
+
+{% endblock %}

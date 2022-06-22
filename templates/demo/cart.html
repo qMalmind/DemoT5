@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %} Корзина {% endblock %}
+
+{% block content %}
+    <h1>Корзина</h1>
+    <div class="carts">
+        {% for item in carts %}
+            <div class="card" style="width: 300px;">
+                <img src="{{ item.product.photo_file.url }}" class="card-img-top" alt="{{ item.product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.product.name }}</h5>
+                    <li class="list-group-item">Цена товара: {{ item.product.price }}</li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">В корзине: <span class="num">{{ item.count }}</span></p>
+                    <a href="{% url 'product' item.pk %}" class="card-link">Подробнее</a> <br>
+
+                    <input type="button" value="+" class="btn btn-light"
+                           onclick="addToCart(this, {{ item.product.pk }})">
+                    <input type="button" value="-" class="btn btn-light"
+                           onclick="difToCart(this, {{ item.product.pk }})">
+
+                </div>
+                <div class="card-footer mes-hide">
+                    1
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% if carts %}
+        <div class="form">
+            <div class="form-group">
+                <label for="user-password">Пароль</label>
+                <input type="password" name="user_password" id="user-password" placeholder="super-secret"
+                       class="form-control">
+            </div>
+            <input type="button" name="user_password" value="оформить заказ" class="btn btn-primary"
+                   onclick="checkout(this, {% url 'orders' %})">
+            <span class="mes mes-hide">1</span>
+        </div>
+    {% endif %}
+
+    <script>
+        addToCart = async (target, pk) => {
+            const res = await fetch(`/add_cart/?product=${pk}`).then(res => res.json());
+            let footer = target.parentElement.parentElement.querySelector('.card-footer');
+
+            footer.classList.remove('mes-success');
+            footer.classList.remove('mes-error');
+            footer.innerHTML = '';
+
+            if (res.error) {
+                footer.innerHTML = 'Товар не добавлен в корзину';
+                footer.classList.add('mes-error');
+            } else {
+                footer.innerHTML = 'Товар добавлен в корзину';
+                footer.classList.add('mes-success');
+                target.parentElement.querySelector('.num').innerHTML = res.count;
+            }
+
+            setTimeout(() => {
+                footer.classList.remove('mes-success');
+                footer.classList.remove('mes-error');
+            }, 1000)
+        }
+
+        difToCart = async (target, pk) => {
+            const res = await fetch(`/dif_cart/?product=${pk}`).then(res => res.json());
+            let footer = target.parentElement.parentElement.querySelector('.card-footer');
+
+            footer.classList.remove('mes-success');
+            footer.classList.remove('mes-error');
+            footer.innerHTML = '';
+
+            if (res.error) {
+                target.parentElement.parentElement.remove()
+            } else {
+                footer.innerHTML = 'Товар убран из корзины';
+                footer.classList.add('mes-success');
+                target.parentElement.querySelector('.num').innerHTML = res.count;
+            }
+
+            setTimeout(() => {
+                footer.classList.remove('mes-success');
+                footer.classList.remove('mes-error');
+            }, 1000)
+        }
+
+        checkout = async (target, successUrl) => {
+            let password = document.getElementById('user-password').value;
+            const res = await fetch(`/create_order/?password=${password}`).then(res => res.json());
+
+            let mes = target.parentElement.querySelector('.mes');
+            mes.innerHTML = '';
+            mes.classList.remove('mes-success');
+            mes.classList.remove('mes-error');
+            mes.classList.remove('mes-hide');
+
+            if (res.invalid_password) {
+                mes.innerHTML = 'Неверный пароль';
+                mes.classList.add('mes-error');
+            }
+
+            if (res.success){
+                mes.innerHTML = 'Заказ успешно создан';
+                mes.classList.add('mes-success');
+                document.querySelectorAll('.card').forEach((item, i, arr)=>{
+                    item.remove();
+                });
+                setTimeout(()=>{
+                    location.href = successUrl;
+                }, 1000);
+            }
+
+            setTimeout(() => {
+                mes.classList.remove('mes-success');
+                mes.classList.remove('mes-error');
+                mes.classList.add('mes-hide');
+                mes.innerHTML = '';
+            }, 1000)
+        }
+    </script>
+
+{% endblock %}

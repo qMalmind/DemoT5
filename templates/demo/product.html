@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Каталог {% endblock %}
+
+{% block content %}
+    <h1>Принтер {{ product.name }}</h1>
+    <div style="display: flex; align-items: center">
+        <ul>
+            <li>
+                Цена: {{ product.price }}руб
+            </li>
+            <li>
+                Год произодства: {{ product.year }}
+            </li>
+            <li>
+                Страна проихводитель: {{ product.country }}
+            </li>
+            <li>
+                Количество на складе: {{ product.count }} штук
+            </li>
+        </ul>
+        <img src="{{ product.photo_file.url }}" alt="{{ product.name }}">
+    </div>
+
+{% endblock %}

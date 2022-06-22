@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Каталог {% endblock %}
+
+{% block content %}
+    <h1>Контакты</h1>
+    <ul>
+        <li>
+            Телефон: <a href="tel:3101010">310-10-10</a>
+        </li>
+        <li>
+            Адрес: Улица пушкина дом колотушкино
+        </li>
+    </ul>
+    <figure class="figure">
+        {% load static %}
+        <img src="{% static 'img/contact_map.webp' %}" class="figure-img img-fluid rounded" alt="Карта с местоположением" width="300px" height="300px">
+        <figcaption class="figure-caption">Адрес: Улица пушкина дом колотушкино</figcaption>
+    </figure>
+
+{% endblock %}
